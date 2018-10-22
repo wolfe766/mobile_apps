@@ -1,3 +1,5 @@
+//Firebase example app for next checkpoint
+
 package aclass.champion.android.streetart;
 
 import com.bumptech.glide.Glide;
