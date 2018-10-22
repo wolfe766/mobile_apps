@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">StreetArt</string>
+    <string name="create_button">Create Image</string>
+    <string name="update_button">Upload Image</string>
+    <string name="read_button">Retrieve Image</string>
+    <string name="delete_button">Delete Image</string>
 </resources>
