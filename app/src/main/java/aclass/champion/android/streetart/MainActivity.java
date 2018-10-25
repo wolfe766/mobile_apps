@@ -3,6 +3,7 @@
 package aclass.champion.android.streetart;
 
 import com.bumptech.glide.Glide;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FileDownloadTask;
@@ -12,7 +13,7 @@ import com.google.firebase.storage.UploadTask;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -28,8 +29,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -246,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this,"FAILED Download" + e,Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     private void deleteFromFirebase(){
