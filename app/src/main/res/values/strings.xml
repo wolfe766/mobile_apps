@@ -4,4 +4,5 @@
     <string name="update_button">Upload Image</string>
     <string name="read_button">Retrieve Image</string>
     <string name="delete_button">Delete Image</string>
+    <string name="change_name_button">Change Name</string>
 </resources>

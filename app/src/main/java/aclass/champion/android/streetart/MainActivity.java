@@ -4,8 +4,18 @@ package aclass.champion.android.streetart;
 
 import com.bumptech.glide.Glide;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -28,6 +38,10 @@ import android.widget.Toast;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -44,10 +58,13 @@ public class MainActivity extends AppCompatActivity {
     private Button mReadButton;
     private Button mUpdateButton;
     private Button mDeleteButton;
+    private Button mUpdatePictureName;
 
     private StorageReference mStorageRef;
 
     private boolean mImageTaken = false;
+    private final FirebaseFirestore FIRESTOREDB = FirebaseFirestore.getInstance();
+    private String DOCREF = "empty";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         mReadButton = (Button) findViewById(R.id.read_button);
         mUpdateButton = (Button) findViewById(R.id.update_button);
         mDeleteButton = (Button) findViewById(R.id.delete_button);
+        mUpdatePictureName = (Button) findViewById(R.id.change_name_button);
 
         //prepare firebase
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -103,6 +121,14 @@ public class MainActivity extends AppCompatActivity {
                 deleteFromFirebase();
             }
         });
+        mUpdatePictureName.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                //Change name on a picture
+                updateFireStorePicture(FIRESTOREDB, DOCREF);
+            }
+        });
+
     }
 
     @Override
@@ -193,23 +219,43 @@ public class MainActivity extends AppCompatActivity {
 
             //TODO: debug_image_one should be something unique for each image, and the
             //TODO: folder should correspond to a category or area
-            StorageReference debug_reference = mStorageRef.child("debug/debug_image_one");
+            final StorageReference debug_reference = mStorageRef.child("debug/debug_image_one");
 
             //Start the upload to Firebase
-            debug_reference.putBytes(image_as_byte_array).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            final UploadTask uploadTask = debug_reference.putBytes(image_as_byte_array);
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // Get URL to the uploaded content
                     Uri downloadUri = taskSnapshot.getUploadSessionUri();
-                    Toast.makeText(MainActivity.this,"Successful Upload",Toast.LENGTH_SHORT).show();
 
+                    Toast.makeText(MainActivity.this,"Successful Upload",Toast.LENGTH_SHORT).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     //TODO: Handle unsuccessful uploads
                     Toast.makeText(MainActivity.this,"FAILED Upload" + e,Toast.LENGTH_SHORT).show();
-
+                }
+            });
+            uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+                    // Continue with the task to get the download URL
+                    return debug_reference.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        addFireStorePicture(FIRESTOREDB, downloadUri.toString());
+                    } else {
+                        Toast.makeText(MainActivity.this,"FAILED Upload", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
@@ -236,6 +282,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                 //When the file is successfully downloaded, notify user and update the image box
                 Toast.makeText(MainActivity.this,"Success Download",Toast.LENGTH_SHORT).show();
+                getFireStorePicture(FIRESTOREDB, DOCREF);
                 Glide.with(MainActivity.this).load(mLocalFile).into(mImageView);
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -253,8 +300,172 @@ public class MainActivity extends AppCompatActivity {
         StorageReference debug_reference = mStorageRef.child("debug/debug_image_one");
         debug_reference.delete();
         Toast.makeText(MainActivity.this,"Deleted debug file on firebase",Toast.LENGTH_SHORT).show();
+        deleteFireStorePicture(FIRESTOREDB, DOCREF);
+
+    }
+    private void addFireStorePicture(FirebaseFirestore db, String path) {
+        // Create a new user with a first and last name
+        Map<String, Object> picture = new HashMap<>();
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+
+        picture.put("title", "test");
+        picture.put("location", new GeoPoint(40.987,-80.123));
+        picture.put("artist", "test");
+        picture.put("description", "test");
+        picture.put("path", path);
+        //picture.put("date", timeStamp);
+        picture.put("date", "20181024_032724");
+
+
+        // Add a new document with a generated ID
+        db.collection("pictures")
+                .add(picture)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        DOCREF = documentReference.getId();
+                        Log.d(TAG, "DocumentSnapshot added with ID: " + DOCREF);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                    }
+                });
+
+    }
+    private void getFireStorePicture(FirebaseFirestore db, final String ref) {
+//        DocumentReference docRef = db.collection("pictures").document();
+//        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    DocumentSnapshot document = task.getResult();
+//                    if (document.exists()) {
+//                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+//                        Toast.makeText(MainActivity.this,document.getId() + " => " + document.getData(),Toast.LENGTH_LONG).show();
+//                    } else {
+//                        Log.d(TAG, "No such document " + ref);
+//                    }
+//                } else {
+//                    Log.d(TAG, "get failed with ", task.getException());
+//                }
+//            }
+//        });
+
+        CollectionReference colRef = db.collection("pictures");
+        Query query = colRef.whereEqualTo("date", "20181024_032724");
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot query = task.getResult();
+                    if (query.size() > 0) {
+                        DocumentSnapshot document = query.getDocuments().remove(0);
+                        if (document.exists()) {
+                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                            Toast.makeText(MainActivity.this,document.getId() + " => " + document.getData(),Toast.LENGTH_LONG).show();
+                        } else {
+                            Log.d(TAG, "No such document " + ref);
+                        }
+                    } else {
+                        Log.d(TAG, "No such document " + ref);
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
+    }
+    private void deleteFireStorePicture(final FirebaseFirestore db, final String ref) {
+        CollectionReference colRef = db.collection("pictures");
+        Query query = colRef.whereEqualTo("date", "20181024_032724");
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot query = task.getResult();
+                    if (query.size() > 0) {
+                        DocumentSnapshot document = query.getDocuments().remove(0);
+                        if (document.exists()) {
+                            db.collection("pictures").document(document.getId()).delete()
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "Error deleting document", e);
+                                        }
+                                    });
+                        } else {
+                            Log.d(TAG, "No such document " + ref);
+                        }
+                    } else {
+                        Log.d(TAG, "No such document " + ref);
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
+    }
+    private void updateFireStorePicture(final FirebaseFirestore db, final String ref) {
+        CollectionReference colRef = db.collection("pictures");
+        Query query = colRef.whereEqualTo("date", "20181024_032724");
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot query = task.getResult();
+                    if (query.size() > 0) {
+                        DocumentSnapshot document = query.getDocuments().remove(0);
+                        if (document.exists()) {
+                            db.collection("pictures").document(document.getId()).update("artist", "Changed Artist")
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "DocumentSnapshot name changed!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "Error updating document", e);
+                                        }
+                                    });
+                        } else {
+                            Log.d(TAG, "No such document " + ref);
+                        }
+                    } else {
+                        Log.d(TAG, "No such document " + ref);
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
     }
 
+    //get unique ref (ID, or path only) getDocRefByField("pictures", "path", "testPath")
+    private DocumentReference getPictureDocRefByField(String collectionName, String fieldName, String fieldValue){
+        CollectionReference colRef = FIRESTOREDB.collection(collectionName);
+        Query query = colRef.whereEqualTo(fieldName, fieldValue);
+        DocumentReference docRef = query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (!task.isSuccessful()) {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        }).getResult().getDocuments().remove(0).getReference();
 
-
+        return docRef;
+    }
 }
