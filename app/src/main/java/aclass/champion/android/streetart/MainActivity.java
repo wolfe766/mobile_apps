@@ -297,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void deleteFromFirebase(){
         //TODO: Needs to delete specific files, not just the debug file
+        //TODO: Needs to delete specific files, not just the debug file
         StorageReference debug_reference = mStorageRef.child("debug/debug_image_one");
         debug_reference.delete();
         Toast.makeText(MainActivity.this,"Deleted debug file on firebase",Toast.LENGTH_SHORT).show();
