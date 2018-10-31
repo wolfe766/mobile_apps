@@ -1,3 +1,5 @@
+package aclass.champion.android.streetart;
+
 import android.location.Location;
 
 public class Landmark {

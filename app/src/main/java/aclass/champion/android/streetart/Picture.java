@@ -1,3 +1,5 @@
+package aclass.champion.android.streetart;
+
 import android.location.Location;
 
 import java.util.Date;
@@ -7,11 +9,17 @@ public class Picture {
     private String mFilePath;
     private String mTitle;
     private String mArtist;
-    private Date mDate;
+    private String mDate;
     private Location mLocation;
     private String mDescription;
+    private String mLandmark;
     private String[] mTagList;
 
+    public Picture(){}
+
+    public Picture(String id){
+        this.mId = id;
+    }
     public String getId() {
         return mId;
     }
@@ -44,12 +52,20 @@ public class Picture {
         mArtist = artist;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return mDate;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         mDate = date;
+    }
+
+    public String getLandmark() {
+        return mLandmark;
+    }
+
+    public void setLandmark(String landmark) {
+        mLandmark = landmark;
     }
 
     public Location getLocation() {

@@ -1,5 +1,9 @@
+package aclass.champion.android.streetart;
+
 import android.graphics.Bitmap;
 import android.location.Location;
+
+import java.util.ArrayList;
 
 public class User {
     private String mId;
@@ -7,6 +11,12 @@ public class User {
     private String mDisplayName;
     private String[] mImageIds;
     private Bitmap mAvatar;
+    private String[] mImageUrls;
+
+    public User() { }
+    public User(String userID) {
+        this.mId = userID;
+    }
 
     public String getId() {
         return mId;
@@ -38,6 +48,13 @@ public class User {
 
     public void setImageIds(String[] imageIDs) {
         mImageIds = imageIDs;
+    }
+    public String[] getImageUrls() {
+        return mImageUrls;
+    }
+
+    public void setImageUrls(String[] imageUrls) {
+        mImageUrls = imageUrls;
     }
 
     public Bitmap getAvatar() {
