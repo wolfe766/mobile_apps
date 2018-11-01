@@ -4,27 +4,22 @@ package aclass.champion.android.streetart;
 
 import com.bumptech.glide.Glide;
 
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 
-import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -35,13 +30,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -51,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView mImageView;
     private Bitmap mImageThumbnail;
-    private final long MAX_DOWNLOAD_SIZE_BYTES = 10000000; //10 megs
     private File mLocalFile;
 
     private Button mCreateButton;
@@ -67,14 +56,25 @@ public class MainActivity extends AppCompatActivity {
     private final FirebaseFirestore FIRESTOREDB = FirebaseFirestore.getInstance();
     private String DOCREF = "empty";
 
+    DatabaseController dbController;
+    StorageController stController;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         Log.d(TAG, "onCreate called");
 
-        ImageView mImageView = (ImageView) findViewById(R.id.image_box);
+        dbController = new DatabaseController();
+        stController = new StorageController();
+
+        final Picture teste = new Picture("mmxaOaynj6EnhtQZ1e6J");
+        final User userTestObject = new User("gzdzpb2smITIcqUAmRuy");
+
+
+        ImageView mImageView = findViewById(R.id.image_box);
 
         mCreateButton = (Button) findViewById(R.id.create_button);
         mReadButton = (Button) findViewById(R.id.read_button);
@@ -83,8 +83,9 @@ public class MainActivity extends AppCompatActivity {
         mUpdatePictureName = (Button) findViewById(R.id.change_name_button);
         mHomepageButton = (Button) findViewById(R.id.homepage_button);
 
-        //prepare firebase
+        //prepare firebase storage
         mStorageRef = FirebaseStorage.getInstance().getReference();
+
 
         mCreateButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 //Upload taken image to firebase
                 if(mImageTaken == true){
-                    uploadToFirebase();
+                    stController.uploadPictureToStorage(FIRESTOREDB, dbController, mStorageRef, mImageThumbnail);
                 }else{
                     Toast.makeText(MainActivity.this,"You need to take an image to upload!",Toast.LENGTH_SHORT).show();
                 }
@@ -120,7 +121,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 //Delete debug image on Firebase
-                deleteFromFirebase();
+//                Object[] x = dbController.getListOfPictureIDs(FIRESTOREDB, "landmark", "test").toArray();
+//                Toast.makeText(MainActivity.this,"ID: "+ x.length,Toast.LENGTH_SHORT).show();
+
+                dbController.getPictureData(FIRESTOREDB, teste);
+                dbController.getUserData(FIRESTOREDB, userTestObject);
+                Toast.makeText(MainActivity.this, "Artist: " + teste.getArtist(),Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Artist: " + teste.getArtist());
+                Log.d(TAG, "IDs: " + userTestObject.getImageIds());
+
+
+                //deleteFromFirebase();
             }
         });
         mUpdatePictureName.setOnClickListener(new View.OnClickListener(){
@@ -133,8 +144,7 @@ public class MainActivity extends AppCompatActivity {
         mHomepageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, HomepageActivity.class);
-                startActivity(intent);
+                dispatchHomeScreenIntent();
             }
         });
 
@@ -177,7 +187,10 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
-
+    private void dispatchHomeScreenIntent() {
+        Intent homeScreenIntent = new Intent(this, HomepageActivity.class);
+        startActivity(homeScreenIntent);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -213,60 +226,6 @@ public class MainActivity extends AppCompatActivity {
                 //No error, update the image
                 Glide.with(this).load(mImageThumbnail).into(mImageView);
             }
-        }
-    }
-
-    private void uploadToFirebase(){
-        //We saved our image from when we took it with the camera
-        if(mImageThumbnail != null){
-
-            //Create a new raw bytes output stream, convert the bitmap to raw bytes,
-            // then convert to an array that can be written too firebase
-            ByteArrayOutputStream output_stream = new ByteArrayOutputStream();
-            mImageThumbnail.compress(Bitmap.CompressFormat.PNG, 100, output_stream);
-            byte[] image_as_byte_array = output_stream.toByteArray();
-
-            //TODO: debug_image_one should be something unique for each image, and the
-            //TODO: folder should correspond to a category or area
-            final StorageReference debug_reference = mStorageRef.child("debug/debug_image_one");
-
-            //Start the upload to Firebase
-            final UploadTask uploadTask = debug_reference.putBytes(image_as_byte_array);
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // Get URL to the uploaded content
-                    Uri downloadUri = taskSnapshot.getUploadSessionUri();
-
-                    Toast.makeText(MainActivity.this,"Successful Upload",Toast.LENGTH_SHORT).show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    //TODO: Handle unsuccessful uploads
-                    Toast.makeText(MainActivity.this,"FAILED Upload" + e,Toast.LENGTH_SHORT).show();
-                }
-            });
-            uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful()) {
-                        throw task.getException();
-                    }
-                    // Continue with the task to get the download URL
-                    return debug_reference.getDownloadUrl();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        Uri downloadUri = task.getResult();
-                        addFireStorePicture(FIRESTOREDB, downloadUri.toString());
-                    } else {
-                        Toast.makeText(MainActivity.this,"FAILED Upload", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
         }
     }
 
@@ -306,45 +265,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void deleteFromFirebase(){
         //TODO: Needs to delete specific files, not just the debug file
-        //TODO: Needs to delete specific files, not just the debug file
         StorageReference debug_reference = mStorageRef.child("debug/debug_image_one");
         debug_reference.delete();
         Toast.makeText(MainActivity.this,"Deleted debug file on firebase",Toast.LENGTH_SHORT).show();
         deleteFireStorePicture(FIRESTOREDB, DOCREF);
 
     }
-    private void addFireStorePicture(FirebaseFirestore db, String path) {
-        // Create a new user with a first and last name
-        Map<String, Object> picture = new HashMap<>();
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
 
-        picture.put("title", "test");
-        picture.put("location", new GeoPoint(40.987,-80.123));
-        picture.put("artist", "test");
-        picture.put("description", "test");
-        picture.put("path", path);
-        //picture.put("date", timeStamp);
-        picture.put("date", "20181024_032724");
-
-
-        // Add a new document with a generated ID
-        db.collection("pictures")
-                .add(picture)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        DOCREF = documentReference.getId();
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + DOCREF);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                    }
-                });
-
-    }
     private void getFireStorePicture(FirebaseFirestore db, final String ref) {
 //        DocumentReference docRef = db.collection("pictures").document();
 //        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -428,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void updateFireStorePicture(final FirebaseFirestore db, final String ref) {
         CollectionReference colRef = db.collection("pictures");
-        Query query = colRef.whereEqualTo("date", "20181024_032724");
+        Query query = colRef.whereEqualTo("date", "20181030_104947");
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -461,21 +388,5 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    //get unique ref (ID, or path only) getDocRefByField("pictures", "path", "testPath")
-    private DocumentReference getPictureDocRefByField(String collectionName, String fieldName, String fieldValue){
-        CollectionReference colRef = FIRESTOREDB.collection(collectionName);
-        Query query = colRef.whereEqualTo(fieldName, fieldValue);
-        DocumentReference docRef = query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        }).getResult().getDocuments().remove(0).getReference();
-
-        return docRef;
     }
 }
