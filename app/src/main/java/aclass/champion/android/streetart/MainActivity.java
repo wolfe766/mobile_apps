@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mUpdateButton;
     private Button mDeleteButton;
     private Button mUpdatePictureName;
+    private Button mHomepageButton;
 
     private StorageReference mStorageRef;
 
@@ -80,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         mUpdateButton = (Button) findViewById(R.id.update_button);
         mDeleteButton = (Button) findViewById(R.id.delete_button);
         mUpdatePictureName = (Button) findViewById(R.id.change_name_button);
+        mHomepageButton = (Button) findViewById(R.id.homepage_button);
 
         //prepare firebase
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -126,6 +128,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 //Change name on a picture
                 updateFireStorePicture(FIRESTOREDB, DOCREF);
+            }
+        });
+        mHomepageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, HomepageActivity.class);
+                startActivity(intent);
             }
         });
 
