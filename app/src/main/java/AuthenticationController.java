@@ -1,3 +1,5 @@
+import aclass.champion.android.streetart.User;
+
 public class AuthenticationController {
     private User mActiveUser;
 
