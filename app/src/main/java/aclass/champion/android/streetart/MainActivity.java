@@ -87,46 +87,46 @@ public class MainActivity extends AppCompatActivity {
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
 
-        mCreateButton.setOnClickListener(new View.OnClickListener(){
+        mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 //Take a picture
                 mImageTaken = true;
                 dispatchTakePictureIntent();
             }
         });
 
-        mUpdateButton.setOnClickListener(new View.OnClickListener(){
+        mUpdateButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 //Upload taken image to firebase
-                if(mImageTaken == true){
+                if (mImageTaken == true) {
                     stController.uploadPictureToStorage(FIRESTOREDB, dbController, mStorageRef, mImageThumbnail);
-                }else{
-                    Toast.makeText(MainActivity.this,"You need to take an image to upload!",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "You need to take an image to upload!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        mReadButton.setOnClickListener(new View.OnClickListener(){
+        mReadButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 //Download debug image from firebase
                 mImageTaken = true;
                 downloadFromFirebase();
             }
         });
 
-        mDeleteButton.setOnClickListener(new View.OnClickListener(){
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 //Delete debug image on Firebase
 //                Object[] x = dbController.getListOfPictureIDs(FIRESTOREDB, "landmark", "test").toArray();
 //                Toast.makeText(MainActivity.this,"ID: "+ x.length,Toast.LENGTH_SHORT).show();
 
                 dbController.getPictureData(FIRESTOREDB, teste);
                 dbController.getUserData(FIRESTOREDB, userTestObject);
-                Toast.makeText(MainActivity.this, "Artist: " + teste.getArtist(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Artist: " + teste.getArtist(), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Artist: " + teste.getArtist());
                 Log.d(TAG, "IDs: " + userTestObject.getImageIds());
 
@@ -134,9 +134,9 @@ public class MainActivity extends AppCompatActivity {
                 //deleteFromFirebase();
             }
         });
-        mUpdatePictureName.setOnClickListener(new View.OnClickListener(){
+        mUpdatePictureName.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 //Change name on a picture
                 updateFireStorePicture(FIRESTOREDB, DOCREF);
             }
@@ -151,31 +151,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart called");
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume called");
     }
+
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
 
         Log.d(TAG, "onPause called");
     }
 
     @Override
-    public void onStop(){
+    public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop called");
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy called");
     }
@@ -187,10 +188,12 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
+
     private void dispatchHomeScreenIntent() {
         Intent homeScreenIntent = new Intent(this, HomepageActivity.class);
         startActivity(homeScreenIntent);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -205,21 +208,21 @@ public class MainActivity extends AppCompatActivity {
             ImageView mImageView = (ImageView) findViewById(R.id.image_box);
 
             //Try to set the thumbnail image
-            try{
+            try {
                 Bundle extras = data.getExtras();
                 mImageThumbnail = (Bitmap) extras.get("data");
                 Glide.with(this).load(mImageThumbnail).into(mImageView);
-            }catch(NullPointerException ex){
+            } catch (NullPointerException ex) {
                 //we failed to set the image, maybe we're on a Galaxy device
                 //Hitting a null pointer exception here usually means galaxy device
                 galaxyDevice = true;
             }
 
-            if(galaxyDevice){
+            if (galaxyDevice) {
                 //Compatibility for Galaxy devices where extras.get("data") will return null
-                try{
+                try {
                     mImageThumbnail = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
-                }catch(IOException ex){
+                } catch (IOException ex) {
                     //If we still failed to get the image, then it was a problem with the camera
                     //TODO: Do something when we get an error with the camera
                 }
@@ -229,15 +232,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void downloadFromFirebase(){
+    private void downloadFromFirebase() {
 
         //Prepare the ImageView object
         mImageView = (ImageView) findViewById(R.id.image_box);
 
         //Create a temp file to load the image into
-        try{
-            mLocalFile = File.createTempFile("images","jpg");
-        }catch(IOException e){
+        try {
+            mLocalFile = File.createTempFile("images", "jpg");
+        } catch (IOException e) {
             //TODO: IOException
         }
 
@@ -249,25 +252,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                 //When the file is successfully downloaded, notify user and update the image box
-                Toast.makeText(MainActivity.this,"Success Download",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Success Download", Toast.LENGTH_SHORT).show();
                 getFireStorePicture(FIRESTOREDB, DOCREF);
                 Glide.with(MainActivity.this).load(mLocalFile).into(mImageView);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-               //Download fail, notify user with the error
-                Toast.makeText(MainActivity.this,"FAILED Download" + e,Toast.LENGTH_SHORT).show();
+                //Download fail, notify user with the error
+                Toast.makeText(MainActivity.this, "FAILED Download" + e, Toast.LENGTH_SHORT).show();
             }
         });
 
     }
 
-    private void deleteFromFirebase(){
+    private void deleteFromFirebase() {
         //TODO: Needs to delete specific files, not just the debug file
         StorageReference debug_reference = mStorageRef.child("debug/debug_image_one");
         debug_reference.delete();
-        Toast.makeText(MainActivity.this,"Deleted debug file on firebase",Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "Deleted debug file on firebase", Toast.LENGTH_SHORT).show();
         deleteFireStorePicture(FIRESTOREDB, DOCREF);
 
     }
@@ -302,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
                         DocumentSnapshot document = query.getDocuments().remove(0);
                         if (document.exists()) {
                             Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                            Toast.makeText(MainActivity.this,document.getId() + " => " + document.getData(),Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, document.getId() + " => " + document.getData(), Toast.LENGTH_LONG).show();
                         } else {
                             Log.d(TAG, "No such document " + ref);
                         }
@@ -316,6 +319,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
     private void deleteFireStorePicture(final FirebaseFirestore db, final String ref) {
         CollectionReference colRef = db.collection("pictures");
         Query query = colRef.whereEqualTo("date", "20181024_032724");
@@ -353,6 +357,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
     private void updateFireStorePicture(final FirebaseFirestore db, final String ref) {
         CollectionReference colRef = db.collection("pictures");
         Query query = colRef.whereEqualTo("date", "20181030_104947");

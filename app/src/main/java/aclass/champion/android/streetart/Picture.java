@@ -15,11 +15,13 @@ public class Picture {
     private String mLandmark;
     private String[] mTagList;
 
-    public Picture(){}
+    public Picture() {
+    }
 
-    public Picture(String id){
+    public Picture(String id) {
         this.mId = id;
     }
+
     public String getId() {
         return mId;
     }

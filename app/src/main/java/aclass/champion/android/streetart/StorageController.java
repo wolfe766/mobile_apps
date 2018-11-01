@@ -20,10 +20,10 @@ import java.util.Random;
 public class StorageController {
     public static final String TAG = "Main Activity";
 
-    public int uploadPictureToStorage(final FirebaseFirestore db, final DatabaseController dbController, StorageReference mStorageRef, Bitmap mImageThumbnail){
+    public int uploadPictureToStorage(final FirebaseFirestore db, final DatabaseController dbController, StorageReference mStorageRef, Bitmap mImageThumbnail) {
         //We saved our image from when we took it with the camera
         int errorCode = 0;
-        if(mImageThumbnail != null){
+        if (mImageThumbnail != null) {
 
             //Create a new raw bytes output stream, convert the bitmap to raw bytes,
             // then convert to an array that can be written too firebase
@@ -82,7 +82,7 @@ public class StorageController {
                     }
                 }
             });
-        }else {
+        } else {
             errorCode = 1;
         }
         return errorCode;
