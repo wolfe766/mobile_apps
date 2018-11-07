@@ -13,7 +13,9 @@ public class User {
     private Bitmap mAvatar;
     private String[] mImageUrls;
 
-    public User() { }
+    public User() {
+    }
+
     public User(String userID) {
         this.mId = userID;
     }
@@ -49,6 +51,7 @@ public class User {
     public void setImageIds(String[] imageIDs) {
         mImageIds = imageIDs;
     }
+
     public String[] getImageUrls() {
         return mImageUrls;
     }

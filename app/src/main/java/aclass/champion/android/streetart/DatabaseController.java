@@ -32,7 +32,7 @@ public class DatabaseController {
         Map<String, Object> picture = new HashMap<>();
 
         //Add all relevant data to the picture hash
-        String loc = mPic.getLocation().getLatitude() + "," + mPic.getLocation().getLongitude();
+        GeoPoint loc = new GeoPoint(mPic.getLocation().getLatitude(),mPic.getLocation().getLongitude());
 
         picture.put("title", mPic.getTitle());
         picture.put("location", loc); //defined above
@@ -61,9 +61,9 @@ public class DatabaseController {
     }
 
     //filter for landmarks or user
-    public List getListOfPictureIDs(FirebaseFirestore db, String filter, String target){
+    public List getListOfPictureIDs(FirebaseFirestore db, String filter, String target) {
         final List listOfRefs = new ArrayList();
-        List listOfIDs= new ArrayList();
+        List listOfIDs = new ArrayList();
 
         //listOfIDs.add("test");
         db.collection("pictures")
@@ -76,7 +76,7 @@ public class DatabaseController {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 listOfRefs.add(document.getId());
-                                Log.d(TAG, "SUCCESS " +document.getId() + " => " + document.getData());
+                                Log.d(TAG, "SUCCESS " + document.getId() + " => " + document.getData());
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -90,29 +90,29 @@ public class DatabaseController {
 
 
     //gets metadata for an image
-    public void getPictureData(FirebaseFirestore db, final Picture pictureObject){
-          db.collection("pictures").document(pictureObject.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-             @Override
-             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                 if (task.isSuccessful()){
-                     pictureObject.setArtist(task.getResult().get("artist").toString());
-                     pictureObject.setDate(task.getResult().get("date").toString());
-                     pictureObject.setDescription(task.getResult().get("description").toString());
-                     pictureObject.setFilePath(task.getResult().get("path").toString());
-                     pictureObject.setTitle(task.getResult().get("title").toString());
-                     pictureObject.setLandmark(task.getResult().get("landmark").toString());
-                 }
-                 Log.d(TAG, "getting picture object fields complete");
-             }
-         });
+    public void getPictureData(FirebaseFirestore db, final Picture pictureObject) {
+        db.collection("pictures").document(pictureObject.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    pictureObject.setArtist(task.getResult().get("artist").toString());
+                    pictureObject.setDate(task.getResult().get("date").toString());
+                    pictureObject.setDescription(task.getResult().get("description").toString());
+                    pictureObject.setFilePath(task.getResult().get("path").toString());
+                    pictureObject.setTitle(task.getResult().get("title").toString());
+                    pictureObject.setLandmark(task.getResult().get("landmark").toString());
+                }
+                Log.d(TAG, "getting picture object fields complete");
+            }
+        });
     }
 
     //gets data tied to a user
-    public void getUserData(final FirebaseFirestore db, final User userObject){
+    public void getUserData(final FirebaseFirestore db, final User userObject) {
         db.collection("users").document(userObject.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()){
+                if (task.isSuccessful()) {
                     userObject.setDisplayName(task.getResult().get("userName").toString());
                     String[] ImageIDs = (String[]) task.getResult().get("imageIds");
                     userObject.setImageIds(ImageIDs);
@@ -128,15 +128,16 @@ public class DatabaseController {
     }
 
 
-    public void getLandmarkData(){
+    public void getLandmarkData() {
 
     }
 
-    public void updatePictureInFirestore(){
+    public void updatePictureInFirestore() {
 
     }
+
     //get unique ref (ID, or path only) getDocRefByField("pictures", "path", "testPath")
-    private DocumentReference getPictureDocRefByField(FirebaseFirestore db, String collectionName, String fieldName, String fieldValue){
+    private DocumentReference getPictureDocRefByField(FirebaseFirestore db, String collectionName, String fieldName, String fieldValue) {
         CollectionReference colRef = db.collection(collectionName);
         Query query = colRef.whereEqualTo(fieldName, fieldValue);
         DocumentReference docRef = query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -150,18 +151,20 @@ public class DatabaseController {
 
         return docRef;
     }
-    public String[] getUserImageURLS(FirebaseFirestore db, String[] IdArray){
+
+    public String[] getUserImageURLS(FirebaseFirestore db, String[] IdArray) {
         String[] imageUrls = new String[IdArray.length];
 
         CollectionReference colRef = db.collection("pictures");
 
-        for (int i = 0; i < imageUrls.length; i++){
+        for (int i = 0; i < imageUrls.length; i++) {
             imageUrls[i] = getImageURLFromID(colRef, IdArray[i]);
         }
 
         return imageUrls;
     }
-    private String getImageURLFromID(CollectionReference colRef, String id){
+
+    private String getImageURLFromID(CollectionReference colRef, String id) {
         String url = "";
         colRef.document(id).getPath();
 

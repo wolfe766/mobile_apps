@@ -13,7 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class HomepageActivity extends AppCompatActivity {
     public static final String TAG = "Homepage Activity";
-    private String[] imageUrls = new String[] {
+    private String[] imageUrls = new String[]{
             "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/debug%2Fdebug_image_one?alt=media&token=fc762e8d-0bf2-40cc-bdc1-3f9ed47722ad.png",
             "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/psnzbmvmud?alt=media&token=7b6650a6-c287-4ac1-b7b7-c01bfc4ae82e.png",
             "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/%EF%BF%BDi%12%160-?alt=media&token=c3264167-6c9c-455c-bdd9-c1aa03c75541.png"
@@ -34,7 +34,7 @@ public class HomepageActivity extends AppCompatActivity {
         viewPager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "Clicked "+ imageUrls[0]);
+                Log.d(TAG, "Clicked " + imageUrls[0]);
             }
         });
 
@@ -88,28 +88,33 @@ public class HomepageActivity extends AppCompatActivity {
 
         //imageUrls = dbController.getUserImageURLS(FIRESTOREDB, userTestObject.getImageIds());
     }
+
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart called");
     }
+
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume called");
     }
+
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause called");
     }
+
     @Override
-    public void onStop(){
+    public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop called");
     }
+
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy called");
     }

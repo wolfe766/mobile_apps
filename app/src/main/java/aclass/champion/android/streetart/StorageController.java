@@ -56,7 +56,6 @@ public class StorageController extends AsyncTask<StorageDataContainer, Void, Str
         final CountDownLatch signal = new CountDownLatch(1);
 
         if(photoFile != null){
-
             //Create a new raw bytes output stream, convert the bitmap to raw bytes,
             // then convert to an array that can be written too firebase
             Bitmap mImage = BitmapFactory.decodeFile(photoFile.toString());
@@ -103,7 +102,7 @@ public class StorageController extends AsyncTask<StorageDataContainer, Void, Str
                     }
                 }
             });
-        }else {
+        } else {
             errorCode = 1;
         }
 
