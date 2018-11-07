@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 //Upload taken image to firebase
                 if(mImageTaken == true){
-                    stController.uploadPictureToStorage(FIRESTOREDB, dbController, mStorageRef, mImageThumbnail);
+                    //Removed this functionality because parameters have changed and arent easy to get
                 }else{
                     Toast.makeText(MainActivity.this,"You need to take an image to upload!",Toast.LENGTH_SHORT).show();
                 }

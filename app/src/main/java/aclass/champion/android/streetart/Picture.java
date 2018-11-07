@@ -15,6 +15,16 @@ public class Picture {
     private String mLandmark;
     private String[] mTagList;
 
+    public String getThumbnail() {
+        return mThumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        mThumbnail = thumbnail;
+    }
+
+    private String mThumbnail;
+
     public Picture(){}
 
     public Picture(String id){

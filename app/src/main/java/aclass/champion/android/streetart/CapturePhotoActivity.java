@@ -1,5 +1,9 @@
 package aclass.champion.android.streetart;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +13,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,7 +21,9 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -24,9 +31,10 @@ public class CapturePhotoActivity extends AppCompatActivity {
     public static final String TAG = "Capture Photo Activity";
 
     private Button mCreateImageButton;
-    private ImageView mImageView;
     private Context mContext;
     private File mPhotoFile;
+    private Bitmap mImageThumbnail;
+    private String mThumbnailString;
 
     private static final int REQUEST_PHOTO= 2;
 
@@ -36,7 +44,6 @@ public class CapturePhotoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_capture_photo);
 
         mCreateImageButton = (Button) findViewById(R.id.create_button);
-        mImageView = (ImageView) findViewById(R.id.image_box);
 
         //First get the "context" of our application, aka the private data directory path
         mContext = this.getApplicationContext();
@@ -87,10 +94,45 @@ public class CapturePhotoActivity extends AppCompatActivity {
         if (requestCode == REQUEST_PHOTO) {
             // Check that the result was a success
             if (resultCode == RESULT_OK) {
-                Glide.with(this).load(mPhotoFile).into(mImageView);
+
+                //Retrieve the saved full-size photo path on disk
+                String path = mPhotoFile.getAbsolutePath();
+                //Get a small 50x50 scaled thumbnail of the image
+                mImageThumbnail = getScaledBitmap(path, 50,50);
+
+                //Convert the thumbnail to a string so it can be uploaded to firestore
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                mImageThumbnail.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+                byte[] byteArray = byteArrayOutputStream .toByteArray();
+                mThumbnailString = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+
+                //Hide the "create image button"
+                mCreateImageButton.setVisibility(View.GONE);
+
+                //Create a fragment manager and link it to our fragment container
+                FragmentManager fm = getSupportFragmentManager();
+                Fragment fragment = fm.findFragmentById(R.id.fragment_container);
+
+                if(fragment == null){
+                    fragment = new CaptureFragment();
+
+                    //Create a bundle of data to pass to the fragment
+                    Bundle args = new Bundle();
+                    args.putString("path",path);
+                    args.putString("thumbnail",mThumbnailString);
+                    fragment.setArguments(args);
+
+                    //Generate the fragment
+                    fm.beginTransaction()
+                            .add(R.id.fragment_container, fragment)
+                            .commitAllowingStateLoss();
+                }
+
             }
         }
     }
+
 
     @Override
     public void onStart(){
@@ -131,5 +173,26 @@ public class CapturePhotoActivity extends AppCompatActivity {
     public File getPhotoFile() {
         File filesDir = mContext.getFilesDir();
         return new File(filesDir, getPhotoFilename());
+    }
+
+    public static Bitmap getScaledBitmap(String path, int destWidth, int destHeight) {
+        // Read in the dimensions of the image on disk
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options);
+        float srcWidth = options.outWidth;
+        float srcHeight = options.outHeight;
+        // Figure out how much to scale down by
+        int inSampleSize = 1;
+        if (srcHeight > destHeight || srcWidth > destWidth) {
+            float heightScale = srcHeight / destHeight;
+            float widthScale = srcWidth / destWidth;
+            inSampleSize = Math.round(heightScale > widthScale ? heightScale :
+                    widthScale);
+        }
+        options = new BitmapFactory.Options();
+        options.inSampleSize = inSampleSize;
+        // Read in and create final bitmap
+        return BitmapFactory.decodeFile(path, options);
     }
 }

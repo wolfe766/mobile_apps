@@ -27,17 +27,21 @@ import java.util.Map;
 public class DatabaseController {
     public static final String TAG = "Main Activity";
 
-    public void uploadPictureToFirestore(FirebaseFirestore db, String path) {
+    public void uploadPictureToFirestore(FirebaseFirestore db, Picture mPic) {
+        //Create a new picture hash to upload to firestore
         Map<String, Object> picture = new HashMap<>();
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Calendar.getInstance().getTime());
-        picture.put("title", "test");
-        picture.put("location", new GeoPoint(40.987,-80.123));
-        picture.put("landmark", "test2");
-        picture.put("artist", "test");
-        picture.put("description", "test");
-        picture.put("path", path);
-        picture.put("date", timeStamp);
-        //picture.put("date", "20181024_032724");
+
+        //Add all relevant data to the picture hash
+        String loc = mPic.getLocation().getLatitude() + "," + mPic.getLocation().getLongitude();
+
+        picture.put("title", mPic.getTitle());
+        picture.put("location", loc); //defined above
+        picture.put("landmark", mPic.getLandmark());
+        picture.put("artist", mPic.getArtist());
+        picture.put("description", mPic.getDescription());
+        picture.put("path", mPic.getFilePath());
+        picture.put("date", mPic.getDate());
+        picture.put("thumbnail", mPic.getThumbnail());
 
         // Add a new document with a generated ID
         db.collection("pictures")
