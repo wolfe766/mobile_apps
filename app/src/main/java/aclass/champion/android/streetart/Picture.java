@@ -1,5 +1,6 @@
 package aclass.champion.android.streetart;
 
+import android.graphics.Bitmap;
 import android.location.Location;
 
 import java.util.Date;
@@ -14,6 +15,33 @@ public class Picture {
     private String mDescription;
     private String mLandmark;
     private String[] mTagList;
+    private String mLocationString;
+    private String mThumbnail;
+    private Bitmap mThumbnailBitmap;
+
+    public Picture(){}
+
+    public Picture(String id) {
+        this.mId = id;
+    }
+
+    public String getLocationString() {
+        return mLocationString;
+    }
+
+    public void setLocationString(String locationString) {
+        mLocationString = locationString;
+    }
+
+
+    public Bitmap getThumbnailBitmap() {
+        return mThumbnailBitmap;
+    }
+
+    public void setThumbnailBitmap(Bitmap thumbnailBitmap) {
+        mThumbnailBitmap = thumbnailBitmap;
+    }
+
 
     public String getThumbnail() {
         return mThumbnail;
@@ -21,14 +49,6 @@ public class Picture {
 
     public void setThumbnail(String thumbnail) {
         mThumbnail = thumbnail;
-    }
-
-    private String mThumbnail;
-
-    public Picture(){}
-
-    public Picture(String id) {
-        this.mId = id;
     }
 
     public String getId() {

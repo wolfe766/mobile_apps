@@ -102,7 +102,7 @@ public class CapturePhotoActivity extends AppCompatActivity {
 
                 //Convert the thumbnail to a string so it can be uploaded to firestore
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                mImageThumbnail.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+                mImageThumbnail.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
                 byte[] byteArray = byteArrayOutputStream .toByteArray();
                 mThumbnailString = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
