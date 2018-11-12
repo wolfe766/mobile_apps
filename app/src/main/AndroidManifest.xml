@@ -17,14 +17,13 @@
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".HomepageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HomepageActivity"
-            android:parentActivityName=".MainActivity"/>
         <activity android:name=".CapturePhotoActivity"
             android:parentActivityName=".MainActivity"/>
         <activity android:name=".SearchActivity" />
