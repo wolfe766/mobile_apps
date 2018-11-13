@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".CapturePhotoActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".HomepageActivity"/>
         <activity android:name=".SearchActivity" />
         <activity android:name=".MapActivity"
             android:parentActivityName=".HomepageActivity"/>
