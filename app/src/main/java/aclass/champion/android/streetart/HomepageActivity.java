@@ -14,9 +14,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class HomepageActivity extends AppCompatActivity {
     public static final String TAG = "Homepage Activity";
     private String[] imageUrls = new String[]{
-            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/debug%2Fdebug_image_one?alt=media&token=fc762e8d-0bf2-40cc-bdc1-3f9ed47722ad.png",
+            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/biesnsthye?alt=media&token=04498522-dac9-4f71-b3bf-0ff0aef15244.png",
             "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/psnzbmvmud?alt=media&token=7b6650a6-c287-4ac1-b7b7-c01bfc4ae82e.png",
-            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/%EF%BF%BDi%12%160-?alt=media&token=c3264167-6c9c-455c-bdd9-c1aa03c75541.png"
+            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/hlnrduoqbg?alt=media&token=f8b4ff33-2b0a-4625-b5f7-58f01d6fa300.png"
     };
     private final FirebaseFirestore FIRESTOREDB = FirebaseFirestore.getInstance();
     final User userTestObject = new User("gzdzpb2smITIcqUAmRuy");
@@ -28,6 +28,12 @@ public class HomepageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
+        //userTestObject.setImageUrls();
+        //String[] x = userTestObject.getImageIds();
+        //Log.d(TAG, userTestObject.getImageIds().);
+
+        //imageUrls = dbController.getUserImageURLS(FIRESTOREDB, userTestObject.getImageIds());
+        
         ViewPager viewPager = findViewById(R.id.view_pager);
         ViewPagerAdapter adapter = new ViewPagerAdapter(this, imageUrls);
         viewPager.setAdapter(adapter);
@@ -78,15 +84,10 @@ public class HomepageActivity extends AppCompatActivity {
         mSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(HomepageActivity.this, SettingsActivity.class);
-//                startActivity(intent);
-                Log.d(TAG, imageUrls.toString());
+                Intent intent = new Intent(HomepageActivity.this, SettingsActivity.class);
+                startActivity(intent);
             }
         });
-        //userTestObject.getImageUrls();
-        //Log.d(TAG, userTestObject.getImageIds().);
-
-        //imageUrls = dbController.getUserImageURLS(FIRESTOREDB, userTestObject.getImageIds());
     }
 
     @Override
