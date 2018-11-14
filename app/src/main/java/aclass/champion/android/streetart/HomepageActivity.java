@@ -1,12 +1,16 @@
 package aclass.champion.android.streetart;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -22,18 +26,21 @@ public class HomepageActivity extends AppCompatActivity {
     final User userTestObject = new User("gzdzpb2smITIcqUAmRuy");
     DatabaseController dbController;
     StorageController stController;
+//    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
+//        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
         //userTestObject.setImageUrls();
         //String[] x = userTestObject.getImageIds();
         //Log.d(TAG, userTestObject.getImageIds().);
 
         //imageUrls = dbController.getUserImageURLS(FIRESTOREDB, userTestObject.getImageIds());
-        
+
+        //TODO: get imageUrls[] based on userID
         ViewPager viewPager = findViewById(R.id.view_pager);
         ViewPagerAdapter adapter = new ViewPagerAdapter(this, imageUrls);
         viewPager.setAdapter(adapter);
@@ -44,50 +51,71 @@ public class HomepageActivity extends AppCompatActivity {
             }
         });
 
-        Button mPicButton, mSearchButton, mMapButton, mSettingsButton;
+        ImageButton mPicButton;
+        Button mSearchButton, mMapButton, mSettingsButton;
         dbController = new DatabaseController();
         stController = new StorageController();
 
         dbController.getUserData(FIRESTOREDB, userTestObject);
 
 
-        mPicButton = findViewById(R.id.take_pic_button);
-        mSearchButton = findViewById(R.id.search_button);
-        mMapButton = findViewById(R.id.map_button);
-        mSettingsButton = findViewById(R.id.settings_button);
+//        mPicButton = findViewById(R.id.camera_button);
+//        mSearchButton = findViewById(R.id.search_button);
+//        mMapButton = findViewById(R.id.map_button);
+//        mSettingsButton = findViewById(R.id.settings_button);
 
-
-        mPicButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomepageActivity.this, CapturePhotoActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        mSearchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomepageActivity.this, SearchActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        mMapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomepageActivity.this, MapActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        mSettingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomepageActivity.this, SettingsActivity.class);
-                startActivity(intent);
-            }
-        });
+//        bottomNavigationView.setOnNavigationItemSelectedListener(
+//                new BottomNavigationView.OnNavigationItemSelectedListener() {
+//                    @Override
+//                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//                        switch (item.getItemId()) {
+//                            case R.id.bottombaritem_camera:
+//                                // TODO
+//                                return true;
+//                            case R.id.bottombaritem_search:
+//                                // TODO
+//                                return true;
+//                            case R.id.bottombaritem_map:
+//                                // TODO
+//                                return true;
+//                            case R.id.bottombaritem_settings:
+//                                // TODO
+//                                return true;
+//                        }
+//                        return false;
+//                    }
+//                });
+//        mPicButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(HomepageActivity.this, CapturePhotoActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+//
+//        mSearchButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(HomepageActivity.this, SearchActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+//
+//        mMapButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(HomepageActivity.this, MapActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+//
+//        mSettingsButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(HomepageActivity.this, SettingsActivity.class);
+//                startActivity(intent);
+//            }
+//        });
     }
 
     @Override

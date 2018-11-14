@@ -6,4 +6,13 @@
     <string name="delete_button">Delete Image</string>
     <string name="change_name_button">Change Name</string>
     <string name="home_button">Home Screen Test</string>
+    <string name="title_activity_bottom_navigation">StreetArt</string>
+    <string name="title_home">Home</string>
+    <string name="title_camera">Camera</string>
+    <string name="title_search">Search</string>
+    <string name="title_map">Map</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
