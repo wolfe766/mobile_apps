@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 
 import com.google.android.gms.maps.MapFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
     private static final String TAG_FRAGMENT_CAMERA = "tag_frag_camera";
     private static final String TAG_FRAGMENT_SEARCH = "tag_frag_search";
     private static final String TAG_FRAGMENT_MAP = "tag_frag_map";
-
+    private FirebaseAuth mAuth;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -71,6 +73,8 @@ public class BottomNavigationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bottom_navigation);
 
+        mAuth = FirebaseAuth.getInstance();
+
         // Set the 0th Fragment to be displayed by default.
         //switchFragment(0, TAG_FRAGMENT_HOME);
         getFragmentManager()
@@ -102,5 +106,12 @@ public class BottomNavigationActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.frame_fragmentholder, (android.support.v4.app.Fragment) fragments.get(pos), tag)
                 .commit();
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        //TODO: updateUI(currentUser);
     }
 }

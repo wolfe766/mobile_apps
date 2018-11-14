@@ -1,3 +1,5 @@
+package aclass.champion.android.streetart;
+
 import aclass.champion.android.streetart.User;
 
 public class AuthenticationController {
@@ -16,6 +18,9 @@ public class AuthenticationController {
     }
 
     public void resetPassword(){
+
+    }
+    public void createAccount(String userEmail, String userPassword){
 
     }
 }

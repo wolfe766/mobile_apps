@@ -28,9 +28,10 @@ public class HomeFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private String[] imageUrls = new String[]{
-            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/biesnsthye?alt=media&token=04498522-dac9-4f71-b3bf-0ff0aef15244.png",
-            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/psnzbmvmud?alt=media&token=7b6650a6-c287-4ac1-b7b7-c01bfc4ae82e.png",
-            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/hlnrduoqbg?alt=media&token=f8b4ff33-2b0a-4625-b5f7-58f01d6fa300.png"
+            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/e2c985ee-3758-44f6-a378-8469b4c47e97.jpg?alt=media&token=c8d01d33-fa90-4541-836b-918c06ff421d",
+            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/56f020c09105842b008b7af5-750-563.jpg?alt=media&token=c738e335-473b-46bf-96c3-bc922ac5ac22",
+            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/asdasdasdkljh123.jpg?alt=media&token=4ac23a87-fcf5-40c6-99ed-99d0c65a934d",
+            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/jkhsdgafouiyer8976.jpg?alt=media&token=cc7b04c8-f54f-4220-a429-212856359819"
     };
     // TODO: Rename and change types of parameters
     private String mParam1;
