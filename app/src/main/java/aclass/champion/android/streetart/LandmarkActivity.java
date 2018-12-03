@@ -23,6 +23,11 @@ public class LandmarkActivity extends AppCompatActivity {
             "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/Columbus-Murals-005.jpg?alt=media&token=76fe6d16-c230-4535-9dad-9de6d51c63ef.png",
             "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/Short_North_Columbus_Ohio_CAPAAB0216_2x3_72dpi.jpg?alt=media&token=dfc5bd16-141c-42e8-90f0-ac839dd90bb0.png"
     };
+    private String[] messengerWall = new String[]{
+            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/Messenger-Wall.jpg?alt=media&token=f594deae-5153-4154-9324-551d155e8ef0.png",
+            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/IMG_4725.jpg?alt=media&token=69db89dc-bf49-4ac4-aeca-e5611dbf473c.png",
+            "https://firebasestorage.googleapis.com/v0/b/streetart-14cdd.appspot.com/o/IMG_4849.jpg?alt=media&token=a970f2f9-af84-41a0-a202-53cc19b90515.png"
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +48,8 @@ public class LandmarkActivity extends AppCompatActivity {
                     adapter = new ViewPagerAdapter(this, highBrickel);
                 }else if(landmarkName.equals("LincolnHigh")){
                     adapter = new ViewPagerAdapter(this, lincolnHigh);
+                }else if(landmarkName.equals("MessengerWall")) {
+                    adapter = new ViewPagerAdapter(this, messengerWall);
                 }else{
                     adapter = new ViewPagerAdapter(this, imageUrls);
                 }
