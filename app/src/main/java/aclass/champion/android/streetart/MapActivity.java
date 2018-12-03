@@ -45,9 +45,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.setOnMyLocationClickListener(this);
         LatLng SmithLab = new LatLng(40.0027619, -83.013183);
         LatLng ConvCenter = new LatLng(39.9712352, -82.9981496);
+        LatLng HighBrickel = new LatLng(39.976210, -83.003185);
+        LatLng LincolnHigh = new LatLng(39.976932, -83.003242);
+
 
         mMap.addMarker(new MarkerOptions().position(SmithLab).title("Marker at Smith Lab")).setTag("SmithLab");
         mMap.addMarker(new MarkerOptions().position(ConvCenter).title("Marker at Convention Center")).setTag("ConventionCenter");
+        mMap.addMarker(new MarkerOptions().position(HighBrickel).title("Marker at High & Brickel")).setTag("HighBrickel");
+        mMap.addMarker(new MarkerOptions().position(LincolnHigh).title("Marker at Lincoln & High")).setTag("LincolnHigh");
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(SmithLab));
         mMap.setMinZoomPreference(13.0f);
