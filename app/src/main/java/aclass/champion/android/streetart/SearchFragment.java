@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -57,6 +58,10 @@ public class SearchFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    private EditText mPhotoTitle;
+    private EditText mPhotoLandmark;
+    private EditText mPhotoArtist;
+
     public SearchFragment() {
         // Required empty public constructor
     }
@@ -98,6 +103,10 @@ public class SearchFragment extends Fragment {
         mSearchBox = v.findViewById(R.id.search_box1);
         recyclerView = v.findViewById(R.id.my_recycler_view1);
 
+        mPhotoArtist = v.findViewById(R.id.photo_artist1);
+        mPhotoLandmark = v.findViewById(R.id.photo_landmark1);
+        mPhotoTitle = v.findViewById(R.id.photo_title1);
+
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,6 +119,8 @@ public class SearchFragment extends Fragment {
                         docs = queryDocumentSnapshots.getDocuments();
                         //Call function to turn this document into picture object list
                         documentToPictures();
+                        //Removes the items that don't match the filter sections
+                        filterSearchResults();
 
                         recyclerView.setHasFixedSize(true);
                         layoutManager = new LinearLayoutManager(getActivity());
@@ -128,6 +139,33 @@ public class SearchFragment extends Fragment {
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    public void filterSearchResults(){
+        Picture tempPic;
+
+        String title = mPhotoTitle.getText().toString();
+        String artist = mPhotoArtist.getText().toString();
+        String landmark = mPhotoLandmark.getText().toString();
+
+        if(!((title.equals("")) && (artist.equals("")) && (landmark.equals("")))) {
+            for (int i = 0; i < recyclerInput.size(); i++) {
+                tempPic = recyclerInput.get(i);
+                boolean keep = false;
+                if (title.equals(tempPic.getTitle()) && !tempPic.getTitle().equals("")) {
+                    keep = true;
+                } else if (artist.equals(tempPic.getArtist()) && !tempPic.getArtist().equals("")) {
+                    keep = true;
+                } else if (landmark.equals(tempPic.getLandmark()) && !tempPic.getLandmark().equals("")) {
+                    keep = true;
+                }
+
+                if (!keep) {
+                    recyclerInput.remove(i);
+                    i = 0;
+                }
+            }
         }
     }
 
