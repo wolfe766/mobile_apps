@@ -3,8 +3,6 @@ package aclass.champion.android.streetart;
 import android.graphics.Bitmap;
 import android.location.Location;
 
-import java.util.ArrayList;
-
 public class User {
     private String mId;
     private Location mUserLocation;

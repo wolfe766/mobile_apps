@@ -3,8 +3,6 @@ package aclass.champion.android.streetart;
 import android.graphics.Bitmap;
 import android.location.Location;
 
-import java.util.Date;
-
 public class Picture {
     private String mId;
     private String mFilePath;

@@ -1,8 +1,8 @@
 package aclass.champion.android.streetart;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Activity;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;

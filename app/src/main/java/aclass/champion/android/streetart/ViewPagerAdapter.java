@@ -1,7 +1,6 @@
 package aclass.champion.android.streetart;
 
 import android.content.Context;
-import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;

@@ -1,19 +1,13 @@
 package aclass.champion.android.streetart;
 
-import android.app.ActionBar;
-import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 import android.widget.TextView;
-
 
 import com.google.android.gms.maps.MapFragment;
 import com.google.firebase.auth.FirebaseAuth;
